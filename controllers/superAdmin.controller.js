@@ -66,3 +66,35 @@ export const superadminlogin = async(req, res) => {
     });
   }
 };
+
+export const superAdminresetPass = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    const exUser = await SuperAdminRegister.findOne({ email:email });
+    if (!exUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Email not found",
+      });
+    }
+
+    const salt = 10;
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    exUser.password = hashedPassword;
+    await exUser.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({ 
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
