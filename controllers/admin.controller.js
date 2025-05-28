@@ -1,8 +1,8 @@
-// const User = require("../models/Adddata.js");
 import Adminregister from "../models/AdminRegister.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 
+//register admin
 export const adminregister = async (req, res) => {
   try {
     const { username, name, email, password, age } = req.body;
@@ -33,6 +33,7 @@ export const adminregister = async (req, res) => {
   }
 };
 
+//login admin
 export const adminlogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -72,6 +73,7 @@ export const adminlogin = async (req, res) => {
   }
 };
 
+//reset password
 export const adminresetpass = async (req, res) => {
   try {
     const { email, OldPassword, NewPassword, ConfirmPass } = req.body;
@@ -120,6 +122,37 @@ export const adminresetpass = async (req, res) => {
     return res.status(500).json({
       success: false,
       Message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+//decode token
+export const decodeToken = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
+      return res.status(401).json({
+        success: false,
+        message: "Authorization token missing",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+      return res.status(200).json({
+        success: true,
+        message: "get superAdmin data",
+        data : decoded,
+      });
+  
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
       error: error.message,
     });
   }

@@ -5,6 +5,8 @@ import connectDB from "./config.js"
 import Adminroute from "./routes/Admin.js"
 import UserRoutes from  "./routes/User.js"
 import SuperAdminRoutes from "./routes/SuperAdmin.js"
+import TaskRoutes from "./routes/TaskRoutes.js"
+import AuthMiddleware from "./middleware/authMiddleware.js"
 
 dotenv.config();
 const app = express();
@@ -18,7 +20,8 @@ app.use(express.json());
 app.use("/admin", Adminroute);
 app.use("/user", UserRoutes);
 app.use("/superadmin", SuperAdminRoutes);
+app.use("/task",AuthMiddleware, TaskRoutes);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+  console.log( `Server running on port ${process.env.PORT}`);
 });
